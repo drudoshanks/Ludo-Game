@@ -66,6 +66,9 @@ export const gameSlice = createSlice({
     announceWinner: (state, action) => {
       state.winner = action.payload;
     },
+    selectPlayerOption :(state, action) =>{
+      state.PlayerOption = action.payload;
+    }
   },
 });
 
@@ -80,6 +83,7 @@ export const {
   updatePlayerPieceValue,
   disableTouch,
   unfreezeDice,
+  selectPlayerOption,
 } = gameSlice.actions;
 
 export default gameSlice.reducer;

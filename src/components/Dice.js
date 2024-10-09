@@ -6,6 +6,19 @@ import {
   Animated,
   Easing,
 } from 'react-native';
+// import {
+//   collection,
+//   getFirestore,
+//   doc,
+//   query,
+//   where,
+//   getDocs,
+//   updateDoc,
+//   onSnapshot,
+//   documentId,
+//   getDoc,
+//   docs,
+// } from "firebase/firestore";
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
@@ -25,6 +38,7 @@ import {
   selectDiceNo,
   selectDiceRolled,
 } from '../redux/reducers/gameSelectors';
+import { firestore } from '../../firebaseConfig';
 
 const Dice = React.memo(({color, rotate, player, data}) => {
   const dispatch = useDispatch();
@@ -64,14 +78,32 @@ const Dice = React.memo(({color, rotate, player, data}) => {
     };
     animateArrow();
   }, [currentPlayerChance, isDiceRolled]);
+ useEffect(() =>{
+  const db = getFirestore();
+  const gameRef = firestore().collection('games').doc(gameId);
 
+  const unsubscribe = gameRef.onSnapshot(snapshot =>{
+    const gameData = snapshot.data();
+    if(gameData){
+      dispatch(updateDiceNo({diceNo:gameData.DiceRoll}));
+      dispatch (updatePlayerChance({chancePlayer:gameData.currentPlayer}))
+    }
+  });
+  return () => unsubscribe();
+ }, [dispatch])
   const handleDicePress = async () => {
     const newDiceNo = Math.floor(Math.random() * 6) + 1;
     // const newDiceNo = 5;
     playSound('dice_roll');
     setDiceRolling(true);
     await delay(800);
-    dispatch(updateDiceNo({diceNo: newDiceNo}));
+    const gameRef = firestore().collection(games).doc(gameId);
+    await gameRef.update({
+      diceRoll: newDiceNo,
+      isDiceRolled: true,
+      currentPlayer:player
+    })
+   // dispatch(updateDiceNo({diceNo: newDiceNo}));
     setDiceRolling(false);
 
     const isAnyPieceAlive = data?.findIndex(i => i.pos != 0 && i.pos != 57);
@@ -81,6 +113,7 @@ const Dice = React.memo(({color, rotate, player, data}) => {
       if (newDiceNo == 6) {
         dispatch(enablePileSelection({playerNo: player}));
       } else {
+        // chanage here for two playerGame dice roll
         let chancePlayer = player + 1;
         if (chancePlayer > 4) {
           chancePlayer = 1;

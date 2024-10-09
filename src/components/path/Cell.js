@@ -7,6 +7,7 @@ import {ArrowSpot, SafeSpots, StarSpots} from '../../helpers/PlotData';
 import Pile from '../Pile';
 import {useDispatch, useSelector} from 'react-redux';
 import {handleForwardThunk} from '../../redux/reducers/gameAction';
+//import { handleForwardThunk2 } from '../../redux/reducers/gameAction2';
 import {selectCurrentPositions} from '../../redux/reducers/gameSelectors';
 
 const Cell = ({id, color, index}) => {
@@ -25,6 +26,7 @@ const Cell = ({id, color, index}) => {
   const handlePress = useCallback(
     (playerNo, pieceId) => {
       dispatch(handleForwardThunk(playerNo, pieceId, id));
+     //dispatch(handleForwardThunk2(playerNo, pieceId, id));
     },
     [dispatch, id],
   );

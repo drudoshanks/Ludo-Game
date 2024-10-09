@@ -28,6 +28,7 @@ import {
   selectPlayer2,
   selectPlayer3,
   selectPlayer4,
+  selectPlayerOption
 } from '../redux/reducers/gameSelectors';
 
 const LudoBoardScreen = () => {
